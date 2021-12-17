@@ -3,6 +3,7 @@ import * as usersController from '../controllers/users-controller';
 import * as productsController from '../controllers/products-controller';
 
 const createRoute = (app: Application): void => {
+    app.post('/api/users/create', usersController.createUser);
     app.get('/api/users', usersController.getUsers);
     app.get('/api/users/:userId', usersController.getUserById);
     app.get('/api/products', productsController.getProducts);

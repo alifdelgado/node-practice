@@ -1,29 +1,37 @@
 import { Request, Response } from 'express';
-import { users } from '../data/users';
+import Users from '../db/schemas/user';
+import bcrypt from 'bcryptjs';
 
-const getUsers = (req: Request, res: Response): void => {
-  res.send({
-    page: 2,
-    per_page: 6,
-    total: 12,
-    total_pages: 2,
-    data: users,
-    support: {
-      url: 'https://reqres.in/#support-heading',
-      text: 'To keep ReqRes free, contributions towards server costs are appreciated!',
-    },
-  });
+const getUsers = async (req: Request, res: Response): Promise<void> => {
+  const users = await Users.find();
+  res.send(users);
 };
 
-const getUserById = (req: Request, res: Response): void => {
-  console.log('req.params', req.params);
+const getUserById = (req: Request, res: Response) => {
   const { userId } = req.params;
-  const index = users.findIndex((item) => item.id === +userId);
-  if (index !== -1) {
-    res.send({ data: users[index] });
+  const user = Users.findById(userId);
+  if(user) {
+    res.send(user);
     return;
   }
   res.status(404).send({});
 };
 
-export { getUsers, getUserById };
+const createUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, fist_name, last_name, avatar, password } = req.body;
+    const hash: string = await bcrypt.hash(password, 15);
+    const user = await Users.create({
+      email,
+      fist_name,
+      last_name,
+      avatar,
+      password: hash
+    });
+    res.send(user);
+  } catch(e) {
+    res.status(500).send(e.message);
+  }
+};
+
+export { getUsers, getUserById, createUser };

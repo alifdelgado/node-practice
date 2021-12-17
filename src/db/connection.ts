@@ -2,7 +2,8 @@ import mongoose from 'mongoose';
 
 const connection = async(): Promise<boolean> => {
     try {
-        await mongoose.connect('');
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        await mongoose.connect(process.env.MONGO_URI!);
         return true;
     } catch(e) {
         console.error(e);

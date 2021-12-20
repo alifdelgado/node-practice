@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Product, products } from "../data/products";
+import Products from '../db/schemas/product';
 
 const getProducts = (req: Request, res: Response): void => {
     const itemsPerPage: number = 3;
@@ -26,17 +27,16 @@ const getProductById = (req:Request, res: Response): void => {
     res.status(404).send({});
 };
 
-const createProduct = (req:Request, res: Response): void => {
-    const { name, year, color, pantone_value } = req.body;
-    const newProduct: Product = {
-        id: products.length + 1,
+const createProduct = async (req:Request, res: Response): Promise<void> => {
+    const { name, year, price, description, user } = req.body;
+    const product = await Products.create({
         name,
         year,
-        color,
-        pantone_value,
-    };
-    products.push(newProduct);
-    res.send(newProduct);
+        price,
+        description,
+        user
+    });
+    res.send(product);
 };
 
 const updateProduct = (req:Request, res: Response): void => {
